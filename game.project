@@ -1,0 +1,20 @@
+[bootstrap]
+main_collection = /main/loader/loader.collectionc
+
+[script]
+shared_state = 1
+
+[display]
+width = 512
+height = 288
+fullscreen = 0
+update_frequency = 30
+
+[project]
+title = Project V
+version = 0.1.512.dev.e
+
+[graphics]
+default_texture_min_filter = nearest
+default_texture_mag_filter = nearest
+

@@ -1,0 +1,9 @@
+images {
+  image: "/assets/source/MainImages/house sprite.png"
+}
+images {
+  image: "/assets/source/MainImages/KeyE.png"
+}
+margin: 0
+extrude_borders: 0
+inner_padding: 0

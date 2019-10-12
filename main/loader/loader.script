@@ -1,0 +1,33 @@
+local function loadScene(self, sceneId)
+	msg.post("go#"..sceneId, "load")
+	msg.post("go#"..sceneId, "init")
+end
+
+local function unloadScene(self, sceneId)
+	msg.post("go#"..sceneId,"unload")
+end
+
+local dialogMessage = {}
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	loadScene(self, "MainMenu")
+end
+function on_message(self, message_id, message, sender)
+	if message_id == hash("start_game") then
+		loadScene(self, "City1")
+		unloadScene(self, "MainMenu")
+	elseif message_id == hash("load_scene") then
+		loadScene(self, message[1])
+	elseif message_id == hash("unload_scene") then
+		unloadScene(self, message[1])
+	elseif message_id == hash("set_dialog") then
+		loadScene(self, "Dialogs")
+		dialogMessage = message
+	elseif message_id == hash("proxy_loaded") then
+		msg.post(sender, "enable")
+		if sender == msg.url("loader:/go#Dialogs") then
+			msg.post("Dialogs:/go#DialogMenu", "set_dialog", {dialogMessage[1]})
+		end
+	end 
+end

@@ -1,0 +1,40 @@
+key_trigger {
+  input: KEY_W
+  action: "north"
+}
+key_trigger {
+  input: KEY_A
+  action: "west"
+}
+key_trigger {
+  input: KEY_S
+  action: "south"
+}
+key_trigger {
+  input: KEY_D
+  action: "east"
+}
+key_trigger {
+  input: KEY_UP
+  action: "north"
+}
+key_trigger {
+  input: KEY_DOWN
+  action: "south"
+}
+key_trigger {
+  input: KEY_LEFT
+  action: "west"
+}
+key_trigger {
+  input: KEY_RIGHT
+  action: "east"
+}
+key_trigger {
+  input: KEY_ESC
+  action: "pause"
+}
+mouse_trigger {
+  input: MOUSE_BUTTON_LEFT
+  action: "click"
+}
