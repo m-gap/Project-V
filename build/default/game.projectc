@@ -4,10 +4,9 @@ iap_provider = GooglePlay
 immersive_mode = 0
 input_method = KeyEvent
 manifest = /builtins/manifests/android/AndroidManifest.xml
-minimum_sdk_version = 9
+minimum_sdk_version = 16
 package = com.example.todo
-proguard = /builtins/manifests/android/dmengine.pro
-target_sdk_version = 26
+target_sdk_version = 28
 version_code = 1
 
 [bootstrap]
@@ -53,10 +52,14 @@ max_particlefx_count = 64
 
 [html5]
 archive_location_prefix = archive
+cssfile = /builtins/manifests/web/light_theme.css
 custom_heap_size = 0
+heap_size = 256
 htmlfile = /builtins/manifests/web/engine_template.html
-include_dev_tool = 0
+scale_mode = downscale_fit
 set_custom_heap_size = 0
+show_fullscreen_button = 1
+show_made_with_defold = 1
 
 [iap]
 auto_finish_transactions = 1
@@ -140,4 +143,8 @@ max_count = 128
 [sprite]
 max_count = 128
 subpixels = 1
+
+[tilemap]
+max_count = 16
+max_tile_count = 2048
 

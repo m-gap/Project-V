@@ -1,0 +1,9 @@
+images {
+  image: "/assets/source/MainImages/character1.png"
+}
+images {
+  image: "/assets/source/MainImages/character2.png"
+}
+margin: 0
+extrude_borders: 2
+inner_padding: 0

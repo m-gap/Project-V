@@ -34,6 +34,10 @@ key_trigger {
   input: KEY_ESC
   action: "pause"
 }
+key_trigger {
+  input: KEY_E
+  action: "next_dialog"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_LEFT
   action: "click"

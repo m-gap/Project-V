@@ -7,4 +7,5 @@
 	Rsouth
 Swest
 Teast
-	Dpause	click
+	Dpause
+$next_dialog	click

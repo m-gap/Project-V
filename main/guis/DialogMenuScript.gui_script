@@ -1,11 +1,26 @@
+local currentMessage = 1
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
 end
 
+local dialogTable = {}
+
 function on_message(self, message_id, message, sender)
+	currentMessage = 1
+	for i, v in pairs(message) do
+		dialogTable[i] = v
+	end
 	if message_id == hash("set_dialog") then
-		gui.set_text(gui.get_node("text"), message[1])
-		print("done")
-	 
+		gui.set_text(gui.get_node("text"), dialogTable[1][currentMessage])
+	end
+end
+
+function on_input(self, action_id, action)
+	if action_id==hash("next_dialog") and action.released == true and table.getn(dialogTable[1]) > 1 and dialogTable[1][currentMessage+1]~=nil then
+		gui.set_text(gui.get_node("text"), dialogTable[1][currentMessage+1])
+		currentMessage = currentMessage + 1
+	elseif action_id==hash("next_dialog") and action.released == true and dialogTable[1][currentMessage+1]==nil then
+		msg.post("loader:/go#loader", "unload_scene", {"Dialogs"})
 	end
 end
