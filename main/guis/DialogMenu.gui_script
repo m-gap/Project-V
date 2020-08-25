@@ -17,10 +17,13 @@ function on_message(self, message_id, message, sender)
 end
 
 function on_input(self, action_id, action)
-	if action_id==hash("next_dialog") and action.released == true and table.getn(dialogTable[1]) > 1 and dialogTable[1][currentMessage+1]~=nil then
+	-- scrolls through the dialogs
+	if action_id == hash("interact") and action.released == true and table.getn(dialogTable[1]) > 1 and dialogTable[1][currentMessage+1] ~= nil then
 		gui.set_text(gui.get_node("text"), dialogTable[1][currentMessage+1])
 		currentMessage = currentMessage + 1
-	elseif action_id==hash("next_dialog") and action.released == true and dialogTable[1][currentMessage+1]==nil then
+	-- Unloads the dialog menu at the last message.
+	elseif action_id == hash("interact") and action.released == true and dialogTable[1][currentMessage+1] == nil then
 		msg.post("loader:/go#loader", "unload_scene", {"Dialogs"})
+		msg.post("loader:/go#loader", "set_player_property", {{"canMove", true}})
 	end
 end

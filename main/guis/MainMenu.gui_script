@@ -4,6 +4,10 @@ end
 function on_input(self, action_id, action)
 	if(action_id == hash("click") and action.released == true) then
 		if(gui.pick_node(gui.get_node("PlayButton/box"),action.x,action.y)) then
+
+			--[[
+				The loader acts as the entire world.
+			]]
 			msg.post("loader:/go#loader", "start_game")
 			msg.post("loader:/go#loader", "set_dialog", {{"Hello", "Message2", "Really long message three", "hello again"}})
 

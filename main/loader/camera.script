@@ -1,0 +1,15 @@
+function init(self)
+	msg.post("#camera", "acquire_camera_focus")
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("follow") then
+		print (sender)
+		go.set_parent(".", sender) 
+		go.set_position(vmath.vector3(-256, -144, 0))
+	elseif message_id == hash("card-offset") then
+		go.set_parent(".", sender) 
+		go.set_position(vmath.vector3(-100, -100, 0))
+	end
+end
+

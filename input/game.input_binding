@@ -36,7 +36,11 @@ key_trigger {
 }
 key_trigger {
   input: KEY_E
-  action: "next_dialog"
+  action: "interact"
+}
+key_trigger {
+  input: KEY_Q
+  action: "inventory"
 }
 mouse_trigger {
   input: MOUSE_BUTTON_LEFT

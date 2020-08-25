@@ -1,4 +1,4 @@
-image: "/assets/source/Tilemap.png"
+image: "/assets/source/Untitled.png"
 tile_width: 32
 tile_height: 32
 tile_margin: 0
@@ -17,3 +17,4 @@ animations {
 }
 extrude_borders: 1
 inner_padding: 0
+sprite_trim_mode: SPRITE_TRIM_MODE_OFF

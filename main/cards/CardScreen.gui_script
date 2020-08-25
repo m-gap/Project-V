@@ -1,0 +1,31 @@
+local cards = require "main.cards.Cards"
+
+local currentlySelectedCard = ""
+local vigourCount = 3
+
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	cards.activate("Punch", "nobody", {})
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Remove this function if not needed
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == "init_card_battle" then
+		
+	end
+end
+
+function on_input(self, action_id, action)
+	-- Add input-handling code here
+	-- Remove this function if not needed
+end

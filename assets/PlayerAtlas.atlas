@@ -1,0 +1,71 @@
+animations {
+  id: "walk-left"
+  images {
+    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the left step 1.png"
+    sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+  }
+  images {
+    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the left step 2.png"
+    sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+  }
+  images {
+    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the left step 3.png"
+    sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+  }
+  images {
+    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the left step 2.png"
+    sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "walk-right"
+  images {
+    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the right step 1.png"
+    sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+  }
+  images {
+    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the right step 2.png"
+    sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+  }
+  images {
+    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the right step 3.png"
+    sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+  }
+  images {
+    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the right step 2.png"
+    sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "idle-left"
+  images {
+    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the left step 2.png"
+    sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "idle-right"
+  images {
+    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the right step 2.png"
+    sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+margin: 0
+extrude_borders: 2
+inner_padding: 0

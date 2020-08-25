@@ -1,8 +1,14 @@
 images {
   image: "/assets/source/MainImages/house sprite.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
   image: "/assets/source/MainImages/KeyE.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+}
+images {
+  image: "/assets/source/drive-download-20200327T182727Z-001/front of Jin right foot forward.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 margin: 0
 extrude_borders: 0
