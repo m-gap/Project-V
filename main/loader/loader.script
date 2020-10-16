@@ -1,4 +1,4 @@
-local dialogMessage = {}
+local messageContainer = {}
 local currentPlayerLocation = "City"
 
 loadedScenes = {}
@@ -11,7 +11,7 @@ local function loadScene(self, sceneId)
 end
 
 local function unloadScene(self, sceneId)
-	msg.post("go#"..sceneId,"unload")
+	msg.post("go#"..sceneId, "unload")
 
 	for i,v in ipairs(loadedScenes) do
 		if v == sceneId then
@@ -22,39 +22,37 @@ end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
+	msg.post("@render:", "use_fixed_fit_projection")
 	loadScene(self, "MainMenu")
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("start_game") then
-		loadScene(self, "City")
-		unloadScene(self, "MainMenu")
-		
-	elseif message_id == hash("load_scene") then
+	if message_id == hash("load_scene") then
 		loadScene(self, message[1])
-		
 	elseif message_id == hash("unload_scene") then
 		unloadScene(self, message[1])
-		
-	elseif message_id == hash("set_dialog") then
-	-- loads the Dialog menu for us
-		loadScene(self, "Dialogs")
-		dialogMessage = message
-		
+	elseif message_id == hash("show_dialogue") then
+		loadScene(self, "Dialogue")
+		messageContainer = message
+	elseif message_id == hash("init_card_battle") then
+		loadScene(self, "CardScreen")
+		messageContainer = message
 	-- Part of a message chain that sends a property change to the player object
 	elseif message_id == hash("set_player_property") then
 		msg.post(currentPlayerLocation..":/Player/player", "set_player_property", message)
 		
-	-- Default Defold message: fired when a collection proxy has fully loadeds
+	-- Default Defold message: fired when a collection proxy has fully loaded
 	elseif message_id == hash("proxy_loaded") then
 		msg.post(sender, "enable")
 		-- If the loaded scene was the Dialog menu
-		if sender == msg.url("loader:/go#Dialogs") then
-			msg.post("Dialogs:/go#DialogMenu", "set_dialog", {dialogMessage[1]})
+		if sender == msg.url("loader:/go#Dialogue") then
 			msg.post(currentPlayerLocation..":/Player/player", "set_player_property", {{"canMove", false}})
-
-			pprint(loadedScenes)
+			msg.post("Dialogue:/go#Dialogue", "show_dialogue", messageContainer)
+		elseif sender == msg.url("loader:/go#CardScreen") then
+			msg.post(currentPlayerLocation..":/Player/player", "set_player_property", {{"canMove", false}})
+			msg.post("CardScreen:/go#CardScreen", "init_card_battle", messageContainer)
 		end
-		
+	elseif message_id == hash("test") then
+		print(message[1])
 	end
 end

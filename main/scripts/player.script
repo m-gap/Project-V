@@ -1,6 +1,6 @@
 -- Externally modifiable properties; modifiable via set_player_property message
 go.property("canMove", true)
-go.property("health", 100)
+go.property("HP", 100)
 go.property("walkSpeed", 50)
 
 local inventory = {}

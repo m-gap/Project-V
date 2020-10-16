@@ -1,19 +1,19 @@
 animations {
   id: "walk-left"
   images {
-    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the left step 1.png"
+    image: "/assets/source/player/left1.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the left step 2.png"
+    image: "/assets/source/player/left2.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the left step 3.png"
+    image: "/assets/source/player/left3.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the left step 2.png"
+    image: "/assets/source/player/left2.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   playback: PLAYBACK_LOOP_FORWARD
@@ -24,19 +24,19 @@ animations {
 animations {
   id: "walk-right"
   images {
-    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the right step 1.png"
+    image: "/assets/source/player/right1.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the right step 2.png"
+    image: "/assets/source/player/right2.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the right step 3.png"
+    image: "/assets/source/player/right3.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the right step 2.png"
+    image: "/assets/source/player/right2.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   playback: PLAYBACK_LOOP_FORWARD
@@ -47,7 +47,7 @@ animations {
 animations {
   id: "idle-left"
   images {
-    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the left step 2.png"
+    image: "/assets/source/player/left2.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   playback: PLAYBACK_LOOP_FORWARD
@@ -58,7 +58,7 @@ animations {
 animations {
   id: "idle-right"
   images {
-    image: "/assets/source/drive-download-20200327T182727Z-001/jin heading to the right step 2.png"
+    image: "/assets/source/player/right2.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   playback: PLAYBACK_LOOP_FORWARD

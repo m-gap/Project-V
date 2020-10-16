@@ -1,61 +1,53 @@
 images {
-  image: "/assets/source/heart.png"
+  image: "/assets/source/scenes/card_gui/vigour.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/vigour.png"
+  image: "/assets/source/scenes/card_gui/particle.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/hahfunny.png"
+  image: "/assets/source/scenes/card_gui/vigourdepleted.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/particle.png"
+  image: "/assets/source/scenes/card_gui/baroutline.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/vigourdepleted.png"
+  image: "/assets/source/scenes/card_gui/gloss.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/baroutline.png"
+  image: "/assets/source/scenes/card_gui/healthbar.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/gloss.png"
+  image: "/assets/source/scenes/card_gui/shield.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/healthbar.png"
+  image: "/assets/source/scenes/card_gui/jinprofile.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/heart2.png"
+  image: "/assets/source/scenes/card_gui/angledbar.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/shield.png"
+  image: "/assets/source/scenes/card_gui/carddeck.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/jinprofile.png"
+  image: "/assets/source/scenes/card_gui/sparkle.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/angledbar.png"
+  image: "/assets/source/scenes/card_gui/backpack.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/carddeck.png"
-  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
-}
-images {
-  image: "/assets/source/cards/source/sparkle.png"
-  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
-}
-images {
-  image: "/assets/source/cards/source/backpack.png"
+  image: "/assets/source/scenes/card_gui/heart.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 margin: 0

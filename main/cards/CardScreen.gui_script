@@ -1,31 +1,192 @@
-local cards = require "main.cards.Cards"
 
-local currentlySelectedCard = ""
-local vigourCount = 3
+local cards = {
+	["Block"] = {
+		["cardBaseWeight"] = 10,
+		["cardType"] = {"Defence"},
+		["vigourRequirement"] = 1,
+		["cardAction"] = function (sender)
+			applyDefence(sender, 5)
+		end
+	},
+	["Bludgeon"] = {
+		["cardBaseWeight"] = 30,
+		["cardType"] = {"Attack"},
+		["vigourRequirement"] = 2,
+		["cardAction"] = function (target)
+			damage(target, 15)
+		end
+	},
+	["Defend"] = {
+		["cardBaseWeight"] = 30,
+		["cardType"] = {"Attack"},
+		["vigourRequirement"] = 2,
+		["cardAction"] = function (sender)
+			applyDefence(sender, 10)
+		end
+	},
+	["Focus"] = {
+		["cardBaseWeight"] = 20,
+		["cardType"] = {"Vigour"},
+		["vigourRequirement"] = 0,
+		["cardAction"] = function (sender)
+			applyVigour(sender, 1)
+		end
+	},
+	["Parry"] = {
+		["cardBaseWeight"] = 40,
+		["cardType"] = {"Attack", "Defence"},
+		["vigourRequirement"] = 0,
+		["cardAction"] = function (sender, target)
+			damage(target, 7)
+			applyDefence(sender, 5)
+		end
+	},
+	["Search"] = {
+		["cardBaseWeight"] = 10,
+		["cardType"] = {"Draw"},
+		["vigourRequirement"] = 0,
+		["cardAction"] = function (target)
+			applyVigour(target, 1)
+		end
+	},
+	["Strike"] = {
+		["cardBaseWeight"] = 15,
+		["cardType"] = {"Attack"},
+		["vigourRequirement"] = 0,
+		["cardAction"] = function (target)
+			applyVigour(target, 1)
+		end
+	}
+}
 
+
+local isPlayerTurn = true
+
+--player stats
+
+local player = {
+	["card_inventory"] = {
+		{"Strike", 2, 0},
+		{"Block", 2, 0},
+		{"Bludgeon", 2, 0},
+		{"Search", 2, 0}
+	},
+	["deck"] = {},
+	["defence"] = 0,
+	["effects"] = {},
+	["hp"] = {
+		["current"] = 50,
+		["max"] = 50
+	},
+	["prefix"] = "Player",
+	["selectedCard"] = "",
+	["vigour"] = 3
+}
+
+local enemy = {}
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	cards.activate("Punch", "nobody", {})
-end
-
-function final(self)
-	-- Add finalization code here
-	-- Remove this function if not needed
-end
-
-function update(self, dt)
-	-- Add update code here
-	-- Remove this function if not needed
+	player["deck"]  = shuffleDeck(expandDeck(player["card_inventory"]))
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == "init_card_battle" then
-		
+	-- {player = sender, playerStats, enemyStats}
+	if message_id == hash("init_card_battle") then
+		enemy = message
+
+		gui.set_text(gui.get_node("EnemyName"), enemy["displayName"])
+		gui.set_texture(gui.get_node("EnemyProfile"), "Enemies")
+		gui.play_flipbook(gui.get_node("EnemyProfile"), enemy["textureName"])
+
+		updateHP(enemy, -10, 75)
 	end
 end
 
 function on_input(self, action_id, action)
-	-- Add input-handling code here
-	-- Remove this function if not needed
+	if (action_id == hash("click") and action.released == true) then
+		if (gui.pick_node(gui.get_node("PlayButton"), action.x, action.y)) then
+			cedeTurnTo(not isPlayerTurn)
+			updateHP(enemy, -5, 75)
+		end
+	end
 end
+
+function expandDeck(inventory) 
+	local expandedDeck = {}
+	for i, v in pairs(inventory) do
+		for k=1, v[2] do
+			table.insert(expandedDeck, v[1])
+		end
+	end
+
+	return expandedDeck
+end
+
+function shuffleDeck(deck)
+	math.randomseed(os.time())
+	local shuffled = {}
+	for i, v in ipairs(deck) do
+		local pos = math.random(1, #shuffled+1)
+		table.insert(shuffled, pos, v)
+	end
+	
+	return shuffled
+end
+
+function updateHP(target, HPchange, maxHP)
+	target["hp"]["current"] = target["hp"]["current"] + HPchange
+	gui.set_text(gui.get_node(target["prefix"].."HP"), target["hp"]["current"].."/"..target["hp"]["max"])
+	--gui.set_size(gui.get_node(target["prefix"].."HealthBarGloss"), vmath.vector3(target["hp"]["current"]/target["hp"]["max"]*78, 6, 0))
+
+	gui.animate(gui.get_node(target["prefix"].."HealthBarGloss"), gui.PROP_SIZE, vmath.vector3(target["hp"]["current"]/target["hp"]["max"]*78, 6, 0), gui.EASING_INOUTQUAD, 0.1)
+end
+
+function setEnemyStatistics(enemy)
+	-- {HP, cardSet
+end
+
+function applyDefence(target, defence)
+
+end
+
+function applyVigour(target, vigour)
+
+end
+
+function cedeTurnTo(isPlayer)
+	if isPlayer then
+		isPlayerTurn = true
+		gui.set_text(gui.get_node("TurnText"), "Your Turn")
+		gui.animate(gui.get_node("TurnIndicator"), gui.PROP_COLOR, vmath.vector4(0.3019, 0.4, 0.8, 1), gui.EASING_INOUTQUAD, 0.5) 
+	else 
+		isPlayerTurn = false
+		gui.set_text(gui.get_node("TurnText"), "Opponent's Turn")
+		gui.animate(gui.get_node("TurnIndicator"), gui.PROP_COLOR, vmath.vector4(0.902, 0.3019, 0.3019, 1), gui.EASING_INOUTQUAD, 0.5) 
+	end
+end
+
+function damage(target, amount) 
+
+end
+
+function deploy(target, cardName, args)
+	--	cards[cardName](target, args)
+end
+
+function draw(target, number) 
+
+end
+
+function getCard(cardName)
+	return cards[cardName]
+end
+
+function shuffle(target)
+
+end
+
+function effect(target, effect, level)
+
+end
+

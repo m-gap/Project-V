@@ -1,44 +1,59 @@
-go.property("HP", 75)
-go.property("CardSet", ["test"])
+local statistics =  {
+	["card_inventory"] = {
+		{"Strike", 2},
+		{"Block", 2},
+		{"Defend", 1},
+		{"Parry", 1}
+	},
+	["deck"] = {},
+	["defence"] = 2,
+	["displayName"] = "Keeper of Cards",
+	["effects"] = {},
+	["hp"] = {
+		["current"] = 75,
+		["max"] = 75
+	},
+	["prefix"] = "Enemy",
+	["textureName"] = "keeper",
+	["vigour"] = 3
+}
 
-function init(self)
-	-- Add initialization code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
-
-function final(self)
-	-- Add finalization code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
-
-function update(self, dt)
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
+local dialogue = {
+	["dialogue"] = {
+		{
+			["sum"] = 0,
+			["text"] = "What brings you here, fellow traveller?",
+			["options"] = {
+				{"I'm here to look for cards", 1}, {"I'm here for some free food", 2}, {"I challenge thee to a battle", 3}, {"Goodbye", -100}
+			}
+		},
+		{
+			["sum"] = 1,
+			["text"] = "How many cards do you need?",
+			["options"] = {
+				{"One card", 3}, {"Two cards", 4}, {"Goodbye", -100}
+			}
+		},
+		{
+			["sum"] = 2,
+			["text"] = "How much food do you need?",
+			["options"] = {
+				{"One food", 5}, {"Two food", 6}, {"Goodbye", -100}
+			}
+		}
+	},
+	["outcomes"] = {
+		[3] = {"loader:/go#loader", "init_card_battle", statistics},
+		[4] = {"loader:/go#loader", "test", {"Outcome 4"}},
+		[5] = {"loader:/go#loader", "test", {"Outcome 5"}},
+		[7] = {"loader:/go#loader", "test", {"Outcome 7"}},
+		[8] = {"loader:/go#loader", "test", {"Outcome 8"}}
+	}	
+	
+}
 
 function on_message(self, message_id, message, sender)
-	if message_id == "" then
-		
+	if message_id == hash("init_dialogue") then
+		msg.post("loader:/go#loader", "show_dialogue", dialogue)
 	end
-end
-
-function on_input(self, action_id, action)
-	-- Add input-handling code here. The game object this script is attached to
-	-- must have acquired input focus:
-	--
-	--    msg.post(".", "acquire_input_focus")
-	--
-	-- All mapped input bindings will be received. Mouse and touch input will
-	-- be received regardless of where on the screen it happened.
-	-- Learn more: https://defold.com/manuals/input/
-	-- Remove this function if not needed
-end
-
-function on_reload(self)
-	-- Add reload-handling code here
-	-- Learn more: https://defold.com/manuals/hot-reload/
-	-- Remove this function if not needed
 end

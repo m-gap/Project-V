@@ -1,4 +1,4 @@
-font: "/assets/source/pocket_pixel.ttf"
+font: "/assets/source/fonts/pocket_pixel.ttf"
 material: "/font.material"
 size: 15
 antialias: 0

@@ -42,6 +42,10 @@ key_trigger {
   input: KEY_Q
   action: "inventory"
 }
+key_trigger {
+  input: KEY_TAB
+  action: "navigate"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_LEFT
   action: "click"

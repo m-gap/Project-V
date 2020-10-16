@@ -1,29 +1,29 @@
 images {
-  image: "/assets/source/cards/source/new/block.png"
+  image: "/assets/source/cards/block.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/new/bludgeon.png"
+  image: "/assets/source/cards/defend.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/new/defend.png"
+  image: "/assets/source/cards/focus.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/new/focus.png"
+  image: "/assets/source/cards/parry.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/new/parry.png"
+  image: "/assets/source/cards/search.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/new/search.png"
+  image: "/assets/source/cards/strike.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 images {
-  image: "/assets/source/cards/source/new/strike.png"
+  image: "/assets/source/cards/bludgeon.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 margin: 0
