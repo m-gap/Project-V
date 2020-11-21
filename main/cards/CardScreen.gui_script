@@ -1,89 +1,97 @@
-
+--[[
+The following is every card in the game and its stats, stored in this table.
+cardAction is called to execute the card.
+]]
 local cards = {
 	["Block"] = {
 		["cardBaseWeight"] = 10,
 		["cardType"] = {"Defence"},
-		["vigourRequirement"] = 1,
-		["cardAction"] = function (sender)
+		["manaRequirement"] = 1,
+		["cardAction"] = function (sender, target)
 			applyDefence(sender, 5)
 		end
 	},
 	["Bludgeon"] = {
 		["cardBaseWeight"] = 30,
 		["cardType"] = {"Attack"},
-		["vigourRequirement"] = 2,
-		["cardAction"] = function (target)
-			damage(target, 15)
+		["manaRequirement"] = 2,
+		["cardAction"] = function (sender, target)
+			updateHP(target, -15)
 		end
 	},
 	["Defend"] = {
 		["cardBaseWeight"] = 30,
 		["cardType"] = {"Attack"},
-		["vigourRequirement"] = 2,
-		["cardAction"] = function (sender)
+		["manaRequirement"] = 2,
+		["cardAction"] = function (sender, target)
 			applyDefence(sender, 10)
 		end
 	},
 	["Focus"] = {
 		["cardBaseWeight"] = 20,
-		["cardType"] = {"Vigour"},
-		["vigourRequirement"] = 0,
-		["cardAction"] = function (sender)
-			applyVigour(sender, 1)
+		["cardType"] = {"mana"},
+		["manaRequirement"] = 0,
+		["cardAction"] = function (sender, target)
+			applyMana(sender, 1)
 		end
 	},
 	["Parry"] = {
 		["cardBaseWeight"] = 40,
 		["cardType"] = {"Attack", "Defence"},
-		["vigourRequirement"] = 0,
+		["manaRequirement"] = 2,
 		["cardAction"] = function (sender, target)
-			damage(target, 7)
+			updateHP(target, -7)
 			applyDefence(sender, 5)
 		end
 	},
 	["Search"] = {
 		["cardBaseWeight"] = 10,
 		["cardType"] = {"Draw"},
-		["vigourRequirement"] = 0,
-		["cardAction"] = function (target)
-			applyVigour(target, 1)
+		["manaRequirement"] = 0,
+		["cardAction"] = function (sender, target)
+			applyMana(target, 1)
 		end
 	},
 	["Strike"] = {
 		["cardBaseWeight"] = 15,
 		["cardType"] = {"Attack"},
-		["vigourRequirement"] = 0,
-		["cardAction"] = function (target)
-			applyVigour(target, 1)
+		["manaRequirement"] = 1,
+		["cardAction"] = function (sender, target)
+			updateHP(target, -7)
 		end
 	}
 }
 
 
 local isPlayerTurn = true
-
---player stats
+local currentCardPage = 0
+local currentSelectedCard = 0
+local gameHasEnded = false
 
 local player = {
 	["card_inventory"] = {
-		{"Strike", 2, 0},
-		{"Block", 2, 0},
-		{"Bludgeon", 2, 0},
-		{"Search", 2, 0}
+		{"Strike", 2},
+		{"Block", 2},
+		{"Defend", 1},
+		{"Parry", 1},
+		{"Bludgeon", 3},
+		{"Focus", 2}
 	},
 	["deck"] = {},
-	["defence"] = 0,
+	["defence"] = 3,
 	["effects"] = {},
+	["hand"] = {},
 	["hp"] = {
 		["current"] = 50,
 		["max"] = 50
 	},
 	["prefix"] = "Player",
 	["selectedCard"] = "",
-	["vigour"] = 3
+	["mana"] = 3
 }
 
 local enemy = {}
+local enemyObject = nil
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
@@ -94,21 +102,103 @@ function on_message(self, message_id, message, sender)
 	-- {player = sender, playerStats, enemyStats}
 	if message_id == hash("init_card_battle") then
 		enemy = message
+		enemyObject = sender
+		
+		enemy["deck"] = shuffleDeck(expandDeck(enemy["card_inventory"]))
 
 		gui.set_text(gui.get_node("EnemyName"), enemy["displayName"])
 		gui.set_texture(gui.get_node("EnemyProfile"), "Enemies")
 		gui.play_flipbook(gui.get_node("EnemyProfile"), enemy["textureName"])
-
-		updateHP(enemy, -10, 75)
+		applyDefence(player, 0)
+		updateHP(enemy, 0)
+		loadHand(player)
 	end
 end
 
 function on_input(self, action_id, action)
-	if (action_id == hash("click") and action.released == true) then
-		if (gui.pick_node(gui.get_node("PlayButton"), action.x, action.y)) then
-			cedeTurnTo(not isPlayerTurn)
-			updateHP(enemy, -5, 75)
+	if (action_id == hash("click") and action.released == true and not gameHasEnded) then
+		if gui.pick_node(gui.get_node("PlayButton"), action.x, action.y) then
+			if canPlay(cards[player["hand"][currentCardPage*5 + currentSelectedCard]]) then
+				playCard()
+			end	
+		elseif gui.pick_node(gui.get_node("SkipButton"), action.x, action.y) then
+			if isPlayerTurn then
+				cedeTurnTo(not isPlayerTurn)
+				timer.delay(2, false, requestEnemyTurn)
+				currentSelectedCard = 0
+			end
 		end
+
+		for i = 1, 5 do
+			if gui.pick_node(gui.get_node("CardSlot"..i), action.x, action.y) then
+				gui.set_texture(gui.get_node("CardCentre"), "CardLibrary")
+				gui.play_flipbook(gui.get_node("CardCentre"), string.lower(player["hand"][i]))
+				currentSelectedCard = i
+
+				canPlay(cards[player["hand"][currentCardPage*5 + currentSelectedCard]])
+			end
+		end
+	elseif action_id == hash("interact") and action.released == true and gameHasEnded then
+		msg.post("loader:/go#loader", "unload_scene", {"CardScreen"})
+		msg.post("loader:/go#loader", "set_player_property", {{"canMove", true}})
+		
+	end	
+end
+
+function applyDefence(target, defence)
+	target["defence"] = target["defence"] + defence
+
+	if target == player then
+		gui.set_text(gui.get_node("DefenceIndicator"), tostring(target["defence"]))
+	end
+end
+
+function applyMana(target, mana)
+	target["mana"] = target["mana"] + mana
+
+	if target == player then
+		gui.set_text(gui.get_node("ManaIndicator"), tostring(target["mana"]))
+		if target["mana"] <= 3 then
+			gui.animate(gui.get_node("ManaPie"), gui.PROP_FILL_ANGLE, target["mana"]*120, gui.EASING_INOUTBOUNCE, 0.2)
+		else 
+			gui.animate(gui.get_node("ManaPie"), gui.PROP_FILL_ANGLE, 360, gui.EASING_INOUTBOUNCE, 0.2)
+		end
+	end
+end
+
+function canPlay(card)
+	if isPlayerTurn and player["mana"] >= card["manaRequirement"] then
+		gui.set_color(gui.get_node("PlayButton"), vmath.vector4(0.09, 0.588, 0, 1))
+		
+		return true
+	else
+		gui.set_color(gui.get_node("PlayButton"), vmath.vector4(0.5, 0.5, 0.5, 1))
+		
+		return false
+	end
+end
+
+function cedeTurnTo(isPlayer)
+	if isPlayer then
+		isPlayerTurn = true
+		if player["mana"] < 3 then
+			applyMana(player, 1)
+		end
+		applyDefence(player, -1*player["defence"])
+		gui.set_text(gui.get_node("TurnText"), "Your Turn")
+		gui.animate(gui.get_node("TurnIndicator"), gui.PROP_COLOR, vmath.vector4(0.3019, 0.4, 0.8, 1), gui.EASING_INOUTQUAD, 0.5) 
+	else 
+		isPlayerTurn = false
+		applyDefence(enemy, -1*enemy["defence"])
+		gui.set_text(gui.get_node("TurnText"), "Opponent's Turn")
+		gui.animate(gui.get_node("TurnIndicator"), gui.PROP_COLOR, vmath.vector4(0.902, 0.3019, 0.3019, 1), gui.EASING_INOUTQUAD, 0.5) 
+	end
+end
+
+function clearHandDisplay()
+	for i = 1, 5 do
+		gui.set_texture(gui.get_node("CardSlot"..i), "CardSet")
+		gui.play_flipbook(gui.get_node("CardSlot"..i), "particle")
 	end
 end
 
@@ -123,6 +213,94 @@ function expandDeck(inventory)
 	return expandedDeck
 end
 
+function loadHand(target) 
+	local currentHand =  #target["hand"]
+
+	if currentHand < 5 then
+		for i = 5-currentHand, 1, -1 do
+			if target["deck"][i] ~= nil then
+				table.insert(target["hand"], target["deck"][i])
+				table.remove(target["deck"], i)
+			end
+		end
+	end
+	
+	if #target["deck"] == 0 and #target["hand"] == 0 then
+		target["deck"] = shuffleDeck(expandDeck(target["card_inventory"]))
+		loadHand(target)
+	end
+	
+	if target == player then
+		updateHandGui()
+	end
+end
+
+function playCard()
+	local card = cards[player["hand"][currentCardPage*5+currentSelectedCard]]
+	if canPlay(card) then
+		cedeTurnTo(not isPlayerTurn)
+		
+		card["cardAction"](player, enemy)
+
+		if gameHasEnded then
+			return
+		end
+		
+		applyMana(player, card["manaRequirement"]*-1)
+		table.remove(player["hand"], currentCardPage*5+currentSelectedCard)
+
+		currentSelectedCard = 0
+		loadHand(player)
+
+		timer.delay(2, false, requestEnemyTurn)
+	end
+end
+
+function requestEnemyTurn() 
+	math.randomseed(os.time())
+	loadHand(enemy)
+
+	gui.set_color(gui.get_node("PlayButton"), vmath.vector4(0.5, 0.5, 0.5, 1))
+	
+	if enemy["mana"] < 3 then 
+		applyMana(enemy, 1)
+	end
+
+	for i, v in pairs(enemy["hand"]) do
+		local randomChance = math.random(1, 100)
+		local card = cards[enemy["hand"][i]]
+
+		if randomChance <= card["cardBaseWeight"] and enemy["mana"] >= card["manaRequirement"] then
+			card["cardAction"](enemy, player)
+			applyMana(enemy, -1*card["manaRequirement"])
+			showEnemyPlay(enemy["hand"][i])
+			table.remove(enemy["hand"], i)
+			return
+		end
+	end
+
+	for i, v in pairs(enemy["hand"]) do
+		local card = cards[enemy["hand"][i]]
+		
+		if enemy["mana"] >= card["manaRequirement"] then
+			card["cardAction"](enemy, player)
+			applyMana(enemy, -1*card["manaRequirement"])
+			showEnemyPlay(enemy["hand"][i])
+			table.remove(enemy["hand"], i)
+			return
+		end
+	end
+	
+	cedeTurnTo(not isPlayerTurn)
+end
+
+function showEnemyPlay(cardName)
+	gui.set_texture(gui.get_node("CardCentre"), "CardLibrary")
+	gui.play_flipbook(gui.get_node("CardCentre"), string.lower(cardName))
+
+	cedeTurnTo(not isPlayerTurn)
+end
+
 function shuffleDeck(deck)
 	math.randomseed(os.time())
 	local shuffled = {}
@@ -130,63 +308,47 @@ function shuffleDeck(deck)
 		local pos = math.random(1, #shuffled+1)
 		table.insert(shuffled, pos, v)
 	end
-	
+
 	return shuffled
 end
 
-function updateHP(target, HPchange, maxHP)
-	target["hp"]["current"] = target["hp"]["current"] + HPchange
-	gui.set_text(gui.get_node(target["prefix"].."HP"), target["hp"]["current"].."/"..target["hp"]["max"])
-	--gui.set_size(gui.get_node(target["prefix"].."HealthBarGloss"), vmath.vector3(target["hp"]["current"]/target["hp"]["max"]*78, 6, 0))
+function updateHandGui() 
+	clearHandDisplay()
+	for i, v in pairs(player["hand"]) do 
+		gui.set_texture(gui.get_node("CardSlot"..i), "CardLibrary")
+		gui.play_flipbook(gui.get_node("CardSlot"..i), string.lower(player["hand"][i]))
+	end
 
+	gui.set_text(gui.get_node("CardsLeftIndicator"), tostring(#player["deck"]))
+end
+
+function updateHP(target, HPchange)
+	if target["hp"]["current"] + target["defence"] + HPchange <= 0 then
+		target["hp"]["current"] = 0
+		applyDefence(target, -1*target["defence"])
+		
+		winCondition(target)
+		gameHasEnded = true
+	else 
+		if target["defence"] >= math.abs(HPchange) then
+			applyDefence(target, HPchange)
+		else
+			target["hp"]["current"] = target["hp"]["current"] + HPchange + target["defence"]
+			applyDefence(target, -1*target["defence"])
+			
+		end
+	end
+	gui.set_text(gui.get_node(target["prefix"].."HP"), target["hp"]["current"].."/"..target["hp"]["max"])
 	gui.animate(gui.get_node(target["prefix"].."HealthBarGloss"), gui.PROP_SIZE, vmath.vector3(target["hp"]["current"]/target["hp"]["max"]*78, 6, 0), gui.EASING_INOUTQUAD, 0.1)
 end
 
-function setEnemyStatistics(enemy)
-	-- {HP, cardSet
-end
-
-function applyDefence(target, defence)
-
-end
-
-function applyVigour(target, vigour)
-
-end
-
-function cedeTurnTo(isPlayer)
-	if isPlayer then
-		isPlayerTurn = true
-		gui.set_text(gui.get_node("TurnText"), "Your Turn")
-		gui.animate(gui.get_node("TurnIndicator"), gui.PROP_COLOR, vmath.vector4(0.3019, 0.4, 0.8, 1), gui.EASING_INOUTQUAD, 0.5) 
+function winCondition(target) 
+	if target == player then
+		gui.set_text(gui.get_node("WinText"), "You Lose")
+		gui.animate(gui.get_node("EndGame"), gui.PROP_COLOR, vmath.vector4(0.784, 0.086, 0.086, 1), gui.EASING_INOUTQUAD, 0.5) 
+		
 	else 
-		isPlayerTurn = false
-		gui.set_text(gui.get_node("TurnText"), "Opponent's Turn")
-		gui.animate(gui.get_node("TurnIndicator"), gui.PROP_COLOR, vmath.vector4(0.902, 0.3019, 0.3019, 1), gui.EASING_INOUTQUAD, 0.5) 
+		gui.set_text(gui.get_node("WinText"), "You Win")
+		gui.animate(gui.get_node("EndGame"), gui.PROP_COLOR, vmath.vector4(0.3019, 0.4, 0.8, 1), gui.EASING_INOUTQUAD, 0.5) 
 	end
-end
-
-function damage(target, amount) 
-
-end
-
-function deploy(target, cardName, args)
-	--	cards[cardName](target, args)
-end
-
-function draw(target, number) 
-
-end
-
-function getCard(cardName)
-	return cards[cardName]
-end
-
-function shuffle(target)
-
-end
-
-function effect(target, effect, level)
-
-end
-
+end	

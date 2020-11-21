@@ -1,7 +1,7 @@
 local statistics =  {
 	["card_inventory"] = {
-		{"Strike", 2},
-		{"Block", 2},
+		{"Strike", 4},
+		{"Block", 4},
 		{"Defend", 1},
 		{"Parry", 1}
 	},
@@ -9,13 +9,14 @@ local statistics =  {
 	["defence"] = 2,
 	["displayName"] = "Keeper of Cards",
 	["effects"] = {},
+	["hand"] = {},
 	["hp"] = {
 		["current"] = 75,
 		["max"] = 75
 	},
+	["mana"] = 3,
 	["prefix"] = "Enemy",
-	["textureName"] = "keeper",
-	["vigour"] = 3
+	["textureName"] = "keeper"
 }
 
 local dialogue = {
