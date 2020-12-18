@@ -1,14 +1,13 @@
 -- Externally modifiable properties; modifiable via set_player_property message
 go.property("canMove", true)
 go.property("HP", 100)
-go.property("walkSpeed", 50)
+go.property("walkSpeed", 75)
 
 local inventory = {}
 	
 function init(self)
 	-- Initial message postings
 	msg.post(".", "acquire_input_focus")
-	msg.post("/camera", "follow")
 	
 	-- Initial variable declarations
 	self.currentAnimation = "left"

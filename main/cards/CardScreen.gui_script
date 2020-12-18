@@ -1,4 +1,4 @@
---[[
+	--[[
 The following is every card in the game and its stats, stored in this table.
 cardAction is called to execute the card.
 ]]
@@ -79,7 +79,9 @@ local player = {
 	},
 	["deck"] = {},
 	["defence"] = 3,
-	["effects"] = {},
+	["effects"] = {
+
+	},
 	["hand"] = {},
 	["hp"] = {
 		["current"] = 50,

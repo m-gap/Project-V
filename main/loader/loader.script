@@ -22,7 +22,11 @@ end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	msg.post("@render:", "use_fixed_fit_projection")
+
+	defos.set_fullscreen(true)
+	defos.disable_window_resize()
+	defos.disable_maximize_button()
+	
 	loadScene(self, "MainMenu")
 end
 
