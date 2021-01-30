@@ -1362,6 +1362,13 @@ layers {
     v_flip: 0
   }
   cell {
+    x: 17
+    y: 1
+    tile: 0
+    h_flip: 0
+    v_flip: 0
+  }
+  cell {
     x: -12
     y: 1
     tile: 13
@@ -1533,6 +1540,27 @@ layers {
     x: 12
     y: 2
     tile: 13
+    h_flip: 0
+    v_flip: 0
+  }
+  cell {
+    x: 16
+    y: 2
+    tile: 0
+    h_flip: 0
+    v_flip: 0
+  }
+  cell {
+    x: 17
+    y: 2
+    tile: 0
+    h_flip: 0
+    v_flip: 0
+  }
+  cell {
+    x: 18
+    y: 2
+    tile: 0
     h_flip: 0
     v_flip: 0
   }
