@@ -22,11 +22,11 @@ end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
-
-	defos.set_fullscreen(true)
-	defos.disable_window_resize()
-	defos.disable_maximize_button()
-	
+-- 
+-- 	defos.set_fullscreen(true)
+-- 	defos.disable_window_resize()
+-- 	defos.disable_maximize_button()
+-- 	
 	loadScene(self, "MainMenu")
 end
 

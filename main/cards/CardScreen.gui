@@ -1,4 +1,4 @@
-script: "/main/cards/CardScreen.gui_script"
+script: "/main/cards/NewCardScreen.gui_script"
 fonts {
   name: "Pixel"
   font: "/assets/Pixel.font"
@@ -1117,15 +1117,15 @@ nodes {
     w: 1.0
   }
   color {
-    x: 0.2
-    y: 0.3019608
-    z: 0.7019608
+    x: 0.7019608
+    y: 0.101960786
+    z: 0.101960786
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
   texture: "CardSet/healthbar"
-  id: "SkipButton"
+  id: "EndButton"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
@@ -1179,7 +1179,7 @@ nodes {
   }
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
-  text: "Skip Turn"
+  text: "End Turn"
   font: "Pixel"
   id: "text1"
   xanchor: XANCHOR_NONE
@@ -1199,7 +1199,7 @@ nodes {
   }
   adjust_mode: ADJUST_MODE_FIT
   line_break: false
-  parent: "SkipButton"
+  parent: "EndButton"
   layer: ""
   inherit_alpha: true
   alpha: 1.0

@@ -1,68 +1,68 @@
 animations {
   id: "walk-left"
   images {
-    image: "/assets/source/player/left1.png"
+    image: "/assets/source/player/new/jin_walking_1.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/player/left2.png"
+    image: "/assets/source/player/new/jin_walking_2.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/player/left3.png"
+    image: "/assets/source/player/new/jin_walking_3.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/player/left2.png"
+    image: "/assets/source/player/new/jin_walking_4.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   playback: PLAYBACK_LOOP_FORWARD
-  fps: 10
+  fps: 20
   flip_horizontal: 0
   flip_vertical: 0
 }
 animations {
   id: "walk-right"
   images {
-    image: "/assets/source/player/right1.png"
+    image: "/assets/source/player/new/jin_walking_5.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/player/right2.png"
+    image: "/assets/source/player/new/jin_walking_6.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/player/right3.png"
+    image: "/assets/source/player/new/jin_walking_7.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   images {
-    image: "/assets/source/player/right2.png"
+    image: "/assets/source/player/new/jin_walking_8.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   playback: PLAYBACK_LOOP_FORWARD
-  fps: 10
+  fps: 20
   flip_horizontal: 0
   flip_vertical: 0
 }
 animations {
   id: "idle-left"
   images {
-    image: "/assets/source/player/left2.png"
+    image: "/assets/source/player/new/jin_walking_2.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   playback: PLAYBACK_LOOP_FORWARD
-  fps: 10
+  fps: 1
   flip_horizontal: 0
   flip_vertical: 0
 }
 animations {
   id: "idle-right"
   images {
-    image: "/assets/source/player/right2.png"
+    image: "/assets/source/player/new/jin_walking_6.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
   playback: PLAYBACK_LOOP_FORWARD
-  fps: 10
+  fps: 1
   flip_horizontal: 0
   flip_vertical: 0
 }

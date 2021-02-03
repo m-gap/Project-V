@@ -175,7 +175,6 @@ function canPlay(card)
 		return true
 	else
 		gui.set_color(gui.get_node("PlayButton"), vmath.vector4(0.5, 0.5, 0.5, 1))
-		
 		return false
 	end
 end

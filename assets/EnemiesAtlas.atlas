@@ -1,5 +1,5 @@
 images {
-  image: "/assets/source/sexy_card_man.png"
+  image: "/assets/source/enemies/keeper/keeper.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
 margin: 0

@@ -1,0 +1,146 @@
+local Card = require "main.cards.classes.Card"
+local Deck = require "main.cards.classes.Deck"
+local Effect = require "main.cards.classes.Effect"
+local Enemy = require "main.cards.classes.Enemy"
+local Player = require "main.cards.classes.Player"
+local CardGui = {}
+
+local PLAYER = nil
+local ENEMY = nil
+
+local EnemyScript = require "main.enemies.Enemies"
+
+local isPlayerTurn = true
+local currentCardPage = 0
+local currentSelectedCard = 0
+local gameHasEnded = false
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	PLAYER = Player.new(50, 50, 0, 3, {})
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("init_card_battle") then
+		ENEMY = EnemyScript.get(message[1])
+
+		gui.set_text(gui.get_node("EnemyName"), ENEMY.name)
+		gui.set_texture(gui.get_node("EnemyProfile"), "Enemies")
+		gui.play_flipbook(gui.get_node("EnemyProfile"), ENEMY.textureName)
+
+		CardGui.updateHP()
+		CardGui.updateDefence()
+		CardGui.updateMana()
+		CardGui.updateHandGui()
+	end
+end
+
+function on_input(self, action_id, action)
+	if (action_id == hash("click") and action.released == true and not gameHasEnded) then
+		if gui.pick_node(gui.get_node("PlayButton"), action.x, action.y) then
+			if CardGui.canPlay(PLAYER.hand[currentCardPage*5 + currentSelectedCard]) then
+				PLAYER.playCard(currentCardPage*5 + currentSelectedCard)
+				CardGui.updateHandGui()
+			end	
+		elseif gui.pick_node(gui.get_node("EndButton"), action.x, action.y) then
+			if isPlayerTurn then
+				isPlayerTurn = false
+				CardGui.cedeTurn()
+				timer.delay(2, false, ENEMY.playCard)
+
+				isPlayerTurn = true
+				currentSelectedCard = 0
+			end
+		end
+
+		for i = 1, 5 do
+			if gui.pick_node(gui.get_node("CardSlot"..i), action.x, action.y) then
+				gui.set_texture(gui.get_node("CardCentre"), "CardLibrary")
+				gui.play_flipbook(gui.get_node("CardCentre"), string.lower(PLAYER.hand[i].data.name))
+				currentSelectedCard = i
+
+				CardGui.canPlay(PLAYER.hand[currentCardPage*5 + currentSelectedCard])
+			end
+		end
+	elseif action_id == hash("interact") and action.released == true and gameHasEnded then
+		msg.post("loader:/go#loader", "unload_scene", {"CardScreen"})
+		msg.post("loader:/go#loader", "set_player_property", {{"canMove", true}})
+
+	end	
+end
+
+function CardGui.canPlay(card) 
+	if isPlayerTurn and PLAYER.mana.current >= card.data.mana then
+		gui.set_color(gui.get_node("PlayButton"), vmath.vector4(0.09, 0.588, 0, 1))
+
+		return true
+	else
+		gui.set_color(gui.get_node("PlayButton"), vmath.vector4(0.5, 0.5, 0.5, 1))
+
+		return false
+	end
+end
+
+function CardGui.cedeTurn()
+	if isPlayerTurn then
+		PLAYER.mana.current = PLAYER.mana.max --[[ change to method later]]
+		CardGui.updateMana()
+		gui.set_text(gui.get_node("TurnText"), "Your Turn")
+		gui.animate(gui.get_node("TurnIndicator"), gui.PROP_COLOR, vmath.vector4(0.3019, 0.4, 0.8, 1), gui.EASING_INOUTQUAD, 0.5) 
+	else 
+		isPlayerTurn = false
+		ENEMY.mana.current = ENEMY.mana.max --[[ change to method later]]
+		gui.set_text(gui.get_node("TurnText"), "Opponent's Turn")
+		gui.animate(gui.get_node("TurnIndicator"), gui.PROP_COLOR, vmath.vector4(0.902, 0.3019, 0.3019, 1), gui.EASING_INOUTQUAD, 0.5) 
+	end
+end
+
+function CardGui.clearHandDisplay()
+	for i = 1, 5 do
+		gui.set_texture(gui.get_node("CardSlot"..i), "CardSet")
+		gui.play_flipbook(gui.get_node("CardSlot"..i), "particle")
+	end
+end
+
+function CardGui.updateHandGui() 
+	CardGui.clearHandDisplay()
+	for i, v in pairs(PLAYER.hand) do 
+		gui.set_texture(gui.get_node("CardSlot"..i), "CardLibrary")
+		gui.play_flipbook(gui.get_node("CardSlot"..i), string.lower(PLAYER.hand[i].data.name))
+	end
+
+	gui.set_text(gui.get_node("CardsLeftIndicator"), tostring(#PLAYER.deck.cards))
+end
+
+function CardGui.updateHP() 
+	gui.set_text(gui.get_node(PLAYER.prefix.."HP"), PLAYER.hp.current.."/"..PLAYER.hp.max)
+	gui.set_text(gui.get_node(ENEMY.prefix.."HP"), ENEMY.hp.current.."/"..ENEMY.hp.max)
+	
+	gui.animate(gui.get_node(PLAYER.prefix.."HealthBarGloss"), gui.PROP_SIZE, vmath.vector3(PLAYER.hp.current/PLAYER.hp.max*78, 6, 0), gui.EASING_INOUTQUAD, 0.1)
+	gui.animate(gui.get_node(ENEMY.prefix.."HealthBarGloss"), gui.PROP_SIZE, vmath.vector3(ENEMY.hp.current/ENEMY.hp.max*78, 6, 0), gui.EASING_INOUTQUAD, 0.1)
+end
+
+function CardGui.updateDefence()
+	gui.set_text(gui.get_node("DefenceIndicator"), tostring(PLAYER.defence))
+end
+
+function CardGui.updateMana()
+	gui.set_text(gui.get_node("ManaIndicator"), tostring(PLAYER.mana.current))
+	if PLAYER.mana.current <= PLAYER.mana.max then
+		gui.animate(gui.get_node("ManaPie"), gui.PROP_FILL_ANGLE, PLAYER.mana.current*(360/PLAYER.mana.max), gui.EASING_INOUTBOUNCE, 0.2)
+	else 
+		gui.animate(gui.get_node("ManaPie"), gui.PROP_FILL_ANGLE, 360, gui.EASING_INOUTBOUNCE, 0.2)
+	end
+end
+
+function CardGui.winCondition(winner)
+	if winner == "Enemy" then
+		gui.set_text(gui.get_node("WinText"), "You Lose")
+		gui.animate(gui.get_node("EndGame"), gui.PROP_COLOR, vmath.vector4(0.784, 0.086, 0.086, 1), gui.EASING_INOUTQUAD, 0.5) 
+
+	else 
+		gui.set_text(gui.get_node("WinText"), "You Win")
+		gui.animate(gui.get_node("EndGame"), gui.PROP_COLOR, vmath.vector4(0.3019, 0.4, 0.8, 1), gui.EASING_INOUTQUAD, 0.5) 
+	end
+end
+

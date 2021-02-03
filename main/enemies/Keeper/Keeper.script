@@ -1,24 +1,3 @@
-local statistics =  {
-	["card_inventory"] = {
-		{"Strike", 4},
-		{"Block", 4},
-		{"Defend", 1},
-		{"Parry", 1}
-	},
-	["deck"] = {},
-	["defence"] = 2,
-	["displayName"] = "Keeper of Cards",
-	["effects"] = {},
-	["hand"] = {},
-	["hp"] = {
-		["current"] = 75,
-		["max"] = 75
-	},
-	["mana"] = 3,
-	["prefix"] = "Enemy",
-	["textureName"] = "keeper"
-}
-
 local dialogue = {
 	["dialogue"] = {
 		{
@@ -44,13 +23,12 @@ local dialogue = {
 		}
 	},
 	["outcomes"] = {
-		[3] = {"loader:/go#loader", "init_card_battle", statistics},
+		[3] = {"loader:/go#loader", "init_card_battle", {"Keeper"}},
 		[4] = {"loader:/go#loader", "test", {"Outcome 4"}},
 		[5] = {"loader:/go#loader", "test", {"Outcome 5"}},
 		[7] = {"loader:/go#loader", "test", {"Outcome 7"}},
 		[8] = {"loader:/go#loader", "test", {"Outcome 8"}}
 	}	
-	
 }
 
 function on_message(self, message_id, message, sender)
