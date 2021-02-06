@@ -18,13 +18,15 @@ local cardData = {
 		["action"] = function(sender, target)
 			target.damage(6, sender)
 		end,
-		["data"] = Card.new("Strike", 15, {"Attack", "General"}, 1, nil)
+		["data"] = Card.new("Strike", 15, {"Default", "Attack"}, 1, nil),
+		["text"] = "Deal 6 damage."
 	},
 	["Block"] = {
 		["action"] = function(sender, target)
-			target.changeDefence(5)
+			sender.changeDefence(5)
 		end,
-		["data"] = Card.new("Block", 10, {"Defence", "General"}, 1, nil)
+		["data"] = Card.new("Block", 10, {"Default", "Defence"}, 1, nil),
+		["text"] = "Gain 5 defence."
 	}
 }
 

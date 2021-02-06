@@ -23,7 +23,6 @@ function M.new(currentHP, maxHP, defence, mana, effects)
 
 	self.effects = effects
 	self.hand = self.deck.draw(5)
-	pprint(self.hand)
 	self.mana = {}
 	self.mana.current = mana
 	self.mana.max = mana
@@ -49,6 +48,7 @@ function M.new(currentHP, maxHP, defence, mana, effects)
 
 	function self.changeDefence(amount)
 		self.defence = self.defence+amount
+		print("defence change")
 	end
 
 	function self.findEffect(name)
@@ -78,21 +78,28 @@ function M.new(currentHP, maxHP, defence, mana, effects)
 			return
 		end
 
-		local real_hp = self.hp.current - (damage*multiplierValue)
+		local real_hp = self.hp.current - (amount*multiplierValue)
 
 		if real_hp <=0 then
 			self.lose()
 		else
-
+			self.hp.current = real_hp
 		end
 	end
 
 	function self.lose()
-
+		
 	end
 
-	function self.playCard(card)
+	function self.playCard(card, sender, target)
+		self.mana.current = self.mana.current - self.hand[card].data.mana
+
+		self.hand[card].action(sender, target)
 		table.remove(self.hand, card)
+		pprint(sender.defence)
+		pprint(target.defence)
+
+		return sender, target
 	end 
 
 	function self.retrieveEffect(propertyName) 

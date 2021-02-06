@@ -14,7 +14,7 @@ enemies["Keeper"] = function()
 	self.prefix = "Enemy"
 	
 	function self.playCard()
-		-- AI overwrite goes here.
+		return self.hand[1]
 	end
 
 	return self
