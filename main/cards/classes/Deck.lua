@@ -51,7 +51,7 @@ function M.new()
 	function self.removeCards(cardId, firstOnly)
 		for index, cardType in pairs(self.cards) do
 			if cardType.data.name == cardId then
-				table.remove(self.cards, i)
+				table.remove(self.cards, index)
 
 				if firstOnly == true then
 					return

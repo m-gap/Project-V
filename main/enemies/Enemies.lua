@@ -7,14 +7,13 @@ local enemies = {}
 enemies["Keeper"] = function()
 	local inventory = {
 		{Card.get("Strike"), 4},
-		{Card.get("Block"), 3}
 	}
 
-	local self = Enemy.new("Keeper of Cards", 75, 75, "keeper", 3, 2, {}, inventory)
+	local self = Enemy.new("Keeper of Cards", 75, 75, "keeper", 3, 2, {""}, inventory)
 	self.prefix = "Enemy"
 	
 	function self.playCard()
-		return self.hand[1]
+		return 1, self.hand[1]
 	end
 
 	return self

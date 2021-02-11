@@ -1,7 +1,7 @@
 script: "/main/guis/OptionsMenu.gui_script"
 fonts {
   name: "Pixel"
-  font: "/assets/Pixel.font"
+  font: "/assets/fonts/Pixel.font"
 }
 textures {
   name: "Main"

@@ -1,7 +1,7 @@
 script: ""
 fonts {
   name: "Pixel"
-  font: "/assets/Pixel.font"
+  font: "/assets/fonts/Pixel.font"
 }
 background_color {
   x: 0.0

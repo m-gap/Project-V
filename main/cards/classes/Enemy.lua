@@ -14,8 +14,10 @@ function M.new(name, currentHP, maxHP, textureName, mana, defence, effects, inve
 	self.deck.addCards(self.card_inventory)
 	self.deck.shuffle()
 
+	self.effects = effects
+	
 	self.hand = self.deck.draw(5)
-	pprint(self.hand)
+
 	self.mana.current = mana 
 	self.mana.max = mana
 	

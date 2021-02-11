@@ -15,9 +15,48 @@ local currentCardPage = 0
 local currentSelectedCard = 0
 local gameHasEnded = false
 
+
+-- GUI ONLY
+local buttons = {
+	"Mulligan", "ArrowL", "ArrowR", "PlayButton", "EndButton", 
+	"CardSlot1", "CardSlot2", "CardSlot3", "CardSlot4", "CardSlot5"
+}
+
+local onclick = {
+	{"PlayButton", function() 
+		if CardGui.canPlay(PLAYER.hand[currentCardPage*5 + currentSelectedCard]) then
+			local plr, emy = PLAYER.playCard(currentCardPage*5 + currentSelectedCard, PLAYER, ENEMY)
+			
+			PLAYER = plr
+			ENEMY = emy
+
+			gui.set_color(gui.get_node("PlayButton"), vmath.vector4(0.5, 0.5, 0.5, 1))
+			currentSelectedCard = 1
+			
+			CardGui.animateBounce("CardCentre", 0.1, vmath.vector3(0.95, 0.95, 0.95))
+			CardGui.updateGui()
+		end
+	end },
+	{"EndButton", function() 
+		if isPlayerTurn then
+			CardGui.handoff()
+		end
+	end }
+}
+
+local tooltips = {
+	{
+		"Mulligan", "Mulligan System", "Discard your currently selected card and draw one card from the top of your deck. If your deck is empty, your discarded cards will be reshuffled into it."
+	},
+	{
+		"ManaPie", "Mana", "Your mana determines how many cards you can play before ending your turn."
+	}
+}
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
 	PLAYER = Player.new(50, 50, 0, 3, {})
+	CardGui.toggleToolTips(false)
 end
 
 function on_message(self, message_id, message, sender)
@@ -34,21 +73,13 @@ end
 
 function on_input(self, action_id, action)
 	if (action_id == hash("click") and action.released == true and not gameHasEnded) then
-		if gui.pick_node(gui.get_node("PlayButton"), action.x, action.y) then
-			if CardGui.canPlay(PLAYER.hand[currentCardPage*5 + currentSelectedCard]) then
-				local plr, emy = PLAYER.playCard(currentCardPage*5 + currentSelectedCard, PLAYER, ENEMY)
-
-				PLAYER = plr
-				ENEMY = emy
-
-				CardGui.updateGui()
-			end	
-		elseif gui.pick_node(gui.get_node("EndButton"), action.x, action.y) then
-			if isPlayerTurn then
-				CardGui.handoff()
+		for index, value in pairs(onclick) do
+			if gui.pick_node(gui.get_node(value[1]), action.x, action.y) then
+				CardGui.animateBounce(value[1], 0.1, vmath.vector3(0.8, 0.8, 0.8))
+				value[2]()
 			end
 		end
-
+		
 		for i = 1, 5 do
 			if gui.pick_node(gui.get_node("CardSlot"..i), action.x, action.y) then
 				currentSelectedCard = i
@@ -58,9 +89,28 @@ function on_input(self, action_id, action)
 		end
 	elseif action_id == hash("interact") and action.released == true and gameHasEnded then
 		msg.post("loader:/go#loader", "unload_scene", {"CardScreen"})
-		msg.post("loader:/go#loader", "set_player_property", {{"canMove", true}})
-
+		msg.post("loader:/go#loader", "set_player_property", {{"canMove", true}})			 
 	end	
+
+	CardGui.animateButtons(action)
+	CardGui.detectToolTips(action)
+end
+
+function CardGui.animateButtons(action)
+	for index, name in pairs(buttons) do
+		if gui.pick_node(gui.get_node(name), action.x, action.y) and gui.get_color(gui.get_node(name)) ~= vmath.vector4(0.5, 0.5, 0.5, 1) then
+			gui.animate(gui.get_node(name), gui.PROP_SCALE, vmath.vector3(1.2, 1.2, 1), gui.EASING_OUTBOUNCE, 0.1)
+		else
+			gui.animate(gui.get_node(name), gui.PROP_SCALE, vmath.vector3(1, 1, 1), gui.EASING_INBOUNCE, 0.1)
+		end
+	end
+end
+
+function CardGui.animateBounce(nodeId, waitTime, scale)
+	gui.animate(gui.get_node(nodeId), gui.PROP_SCALE, scale, gui.EASING_INOUTQUAD, 0.1)
+	timer.delay(waitTime, false, function()
+		gui.animate(gui.get_node(nodeId), gui.PROP_SCALE, vmath.vector3(1, 1, 1), gui.EASING_INOUTQUAD, 0.1)
+	end)
 end
 
 function CardGui.canPlay(card) 
@@ -104,33 +154,69 @@ function CardGui.clearHandDisplay()
 		gui.set_text(gui.get_node("ManaText"..i), "")
 	end
 end
+function CardGui.detectToolTips(action)
+	for i=1, #tooltips do
+		if gui.pick_node(gui.get_node(tooltips[i][1]), action.x, action.y) then
+			CardGui.toolTip(tooltips[i][2], tooltips[i][3], action.x, action.y)
+		end
+	end
+
+	for i=1, #tooltips do
+		if gui.pick_node(gui.get_node(tooltips[i][1]), action.x, action.y) then
+			return
+		end
+	end
+	
+	CardGui.toggleToolTips(false)
+end
 
 function CardGui.handoff() 
 	isPlayerTurn = false
 	CardGui.cedeTurn()
 	CardGui.updateGui()
-	
-	local enemyCard = ENEMY.playCard()
 
+	ENEMY.refill(5)
+	local index, enemyCard = ENEMY.playCard()
+	
+	ENEMY.mana.current = ENEMY.mana.current - enemyCard.data.mana
+
+	enemyCard.action(ENEMY, PLAYER)	
+	
+	table.remove(ENEMY.hand, index)
+	gui.set_color(gui.get_node("PlayButton"), vmath.vector4(0.5, 0.5, 0.5, 1))
+	
 	timer.delay(2, false, function()
 		isPlayerTurn = true
 		CardGui.cedeTurn()
 
 		CardGui.updateCentre(enemyCard)
--- 		gui.set_texture(gui.get_node("CardCentre"), "CardLibrary")
--- 		gui.play_flipbook(gui.get_node("CardCentre"), string.lower(enemyCard.data.name))
--- 
+		
 		currentSelectedCard = 0
 		CardGui.updateGui()
 	end)
 end
 
-function CardGui.updateCentre(card)
--- 	local card = PLAYER.hand[currentCardPage*5 + currentSelectedCard]
--- 
-	print(currentSelectedCard)
-	pprint(PLAYER.hand)
+function CardGui.toggleToolTips(bool)
+	gui.set_enabled(gui.get_node("ToolTip"), bool)
+	gui.set_enabled(gui.get_node("ToolTipTitle"), bool)
+	gui.set_enabled(gui.get_node("ToolTipBody"), bool)
+end
 
+function CardGui.toolTip(title, body, posX, posY)
+	CardGui.toggleToolTips(true)
+
+	gui.set_position(gui.get_node("ToolTip"), vmath.vector3(posX, posY, 1))
+	gui.set_text(gui.get_node("ToolTipTitle"), title)
+	gui.set_text(gui.get_node("ToolTipBody"), body)
+
+	local text_scaling = gui.get_text_metrics_from_node(gui.get_node("ToolTipBody"))
+
+	gui.set_size(gui.get_node("ToolTip"), vmath.vector3(gui.get_size(gui.get_node("ToolTip")).x, text_scaling.height+40, 0))
+	gui.set_position(gui.get_node("ToolTipTitle"), vmath.vector4(gui.get_size(gui.get_node("ToolTipTitle")).x, text_scaling.height+35, gui.get_size(gui.get_node("ToolTipTitle")).z, 1))
+	gui.set_position(gui.get_node("ToolTipBody"), vmath.vector4(7, text_scaling.height+15, gui.get_size(gui.get_node("ToolTipBody")).z, 1))
+end
+
+function CardGui.updateCentre(card)
 	gui.set_texture(gui.get_node("CardImage"), "CardArt")
 	gui.set_texture(gui.get_node("CardCentre"), "CardArt")
 	
@@ -139,8 +225,9 @@ function CardGui.updateCentre(card)
 	gui.set_text(gui.get_node("Desc"), card.text)
 	gui.set_text(gui.get_node("CardNameText"), card.data.name)
 	gui.set_text(gui.get_node("ManaCost"), tostring(card.data.mana))
-	
 
+	CardGui.animateBounce("CardCentre", 0.1, vmath.vector3(1.05, 1.05, 1.05))
+	
 	CardGui.canPlay(card)
 end
 
@@ -168,7 +255,9 @@ function CardGui.updateHandGui()
 		gui.set_text(gui.get_node("NameText"..i), card.data.name)
 		gui.set_text(gui.get_node("ManaText"..i), card.data.mana)
 	end
-
+	if tonumber(gui.get_text(gui.get_node("CardsLeftIndicator"))) ~= #PLAYER.deck.cards then
+		CardGui.animateBounce("DeckIndicator", 0.1, vmath.vector3(1.2, 1.2, 1.2))
+	end
 	gui.set_text(gui.get_node("CardsLeftIndicator"), tostring(#PLAYER.deck.cards))
 end
 
@@ -181,6 +270,9 @@ function CardGui.updateHP()
 end
 
 function CardGui.updateDefence()
+	if tonumber(gui.get_text(gui.get_node("DefenceIndicator"))) ~= PLAYER.defence then
+		CardGui.animateBounce("ShieldContainer", 0.1, vmath.vector3(1.2, 1.2, 1.2))
+	end
 	gui.set_text(gui.get_node("DefenceIndicator"), tostring(PLAYER.defence))
 end
 
@@ -203,6 +295,3 @@ function CardGui.winCondition(winner)
 		gui.animate(gui.get_node("EndGame"), gui.PROP_COLOR, vmath.vector4(0.3019, 0.4, 0.8, 1), gui.EASING_INOUTQUAD, 0.5) 
 	end
 end
-
-
-

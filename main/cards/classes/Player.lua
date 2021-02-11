@@ -8,7 +8,7 @@ function M.new(currentHP, maxHP, defence, mana, effects)
 	-- temporary until saving system is implemented
 	self.card_inventory = {
 		{ Card.get("Strike"), 4 },
-		{ Card.get("Block"), 3 }
+		{ Card.get("Block"), 3 }		
 	}
 
 	self.hp = {}
@@ -46,9 +46,21 @@ function M.new(currentHP, maxHP, defence, mana, effects)
 		end
 	end
 
+	function self.addTables(table1, table2)
+		local new = {}
+
+		for i, v in pairs(table1) do
+			table.insert(new, v)
+		end
+
+		for i, v in pairs(table2) do
+			table.insert(new, v)
+		end
+
+		return new
+	end
 	function self.changeDefence(amount)
 		self.defence = self.defence+amount
-		print("defence change")
 	end
 
 	function self.findEffect(name)
@@ -96,14 +108,36 @@ function M.new(currentHP, maxHP, defence, mana, effects)
 
 		self.hand[card].action(sender, target)
 		table.remove(self.hand, card)
-		pprint(sender.defence)
-		pprint(target.defence)
 
+		self.refill(5)
+		
 		return sender, target
 	end 
 
+	function self.refill(amount)
+		if #self.hand == 0 then
+			if #self.deck.cards < amount and #self.deck.cards > 0 then
+				local remaining = self.deck.draw(#self.deck.cards)
+				self.deck.addCards(self.card_inventory)
+
+				for i, v in pairs(remaining) do
+					self.deck.removeCards(v.data.name, true)
+				end
+
+				self.deck.shuffle()
+
+				self.hand = self.addTables(remaining, self.deck.draw(amount-#remaining))
+			elseif #self.deck.cards == 0 then
+				self.deck.addCards(self.card_inventory)
+				self.deck.shuffle()
+
+				self.hand = self.deck.draw(5)
+			end
+		end
+	end
 	function self.retrieveEffect(propertyName) 
 		local effectTable = {}
+
 		for index, effect in pairs(self.effects) do
 			if effect[propertyName] ~= nil then
 				table.insert(effectTable, effect[index])
