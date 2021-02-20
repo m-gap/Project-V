@@ -1,0 +1,29 @@
+-- Default Properties for Interact Bubbles
+go.property("destination", msg.url())
+go.property("message", hash("message name"))
+
+function init() 
+	msg.post("#sprite", "disable")
+end
+
+function on_message(self, message_id, message, sender)	
+	-- default messages
+	if message_id == hash("trigger_response") then
+		if message.enter and message.other_group == hash("player") then
+			msg.post(".", "acquire_input_focus") 
+			msg.post("#sprite", "enable")
+		else 
+			msg.post(".", "release_input_focus") 
+			msg.post("#sprite", "disable")
+		end
+	end
+	
+end
+
+function on_input(self, action_id, action)
+	if action_id == hash("interact") and action.released == true then
+		msg.post(".", "release_input_focus") 
+		msg.post(self.destination, self.message)
+		msg.post("#sprite", "disable")
+	end
+end
